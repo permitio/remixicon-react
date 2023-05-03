@@ -17,7 +17,7 @@ export default React.memo ? React.memo(${component.name}) : ${component.name};
 
 declare const ${component.name}: RemixiconReactIconComponentType;
 export default ${component.name};
-`, () => `import { ComponentType, SVGProps } from 'react';
+`, (componentNames) => `import { ComponentType, SVGProps } from 'react';
 
 type AllSVGProps = SVGProps<SVGSVGElement>
 
@@ -30,4 +30,6 @@ export interface RemixiconReactIconProps extends Pick<AllSVGProps, Exclude<keyof
   children?: never;
 }
 export type RemixiconReactIconComponentType = ComponentType<RemixiconReactIconProps>;
+
+${componentNames.map(componentName => `export const ${componentName}: RemixiconReactIconComponentType;`).join('\n')}
 `).catch(err => console.error(err));

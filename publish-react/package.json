@@ -24,5 +24,6 @@
   "peerDependencies": {
     "react": ">=0.14.0"
   },
-  "typings": "./dist/typings.d.ts"
+  "typings": "./dist/typings.d.ts",
+  "sideEffects": false
 }
