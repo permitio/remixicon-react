@@ -8,9 +8,18 @@ const svgAttrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
 const validIconName = /^[A-Z]/;
 
 function normalizeName(name) {
-  return 'Svg' + name.split(/[ -]/g).map(part => {
+  const normalizedName = 'Svg' + name.split(/[ -]/g).map(part => {
     return part.charAt(0).toUpperCase() + part.slice(1);
   }).join('');
+
+  // Avoid name collisions between categories (only casing differs otherwise)
+  if (normalizedName === 'SvgBookMarkFill') {
+    return 'SvgDocumentBookMarkFill';
+  } else if (normalizedName === 'SvgBookMarkLine') {
+    return 'SvgDocumentBookMarkLine';
+  }
+
+  return normalizedName;
 }
 
 function checkAllowedAttr(attr, value, content, name) {
@@ -102,7 +111,7 @@ function collectComponents(svgFilesPath) {
     }
 
     const icon = {
-      name: name,
+      name,
       fileName: name + '.js',
       defFileName: name + '.d.ts',
       svgPath
