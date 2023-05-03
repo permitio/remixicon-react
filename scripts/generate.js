@@ -8,9 +8,9 @@ const svgAttrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
 const validIconName = /^[A-Z]/;
 
 function normalizeName(name) {
-  return name.split(/[ -]/g).map(part => {
+  return 'Svg' + name.split(/[ -]/g).map(part => {
     return part.charAt(0).toUpperCase() + part.slice(1);
-  }).join('') + 'Icon';
+  }).join('');
 }
 
 function checkAllowedAttr(attr, value, content, name) {
