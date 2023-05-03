@@ -1,30 +1,11 @@
 const fs = require('fs');
 const { sync: mkdirp } = require('mkdirp');
 const path = require('path');
-const rollup = require('rollup');
-const babel = require('rollup-plugin-babel');
+const swc = require("@swc/core");
 
 const svgPathRegex = /<path\s([^>]*)>/g;
 const svgAttrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
 const validIconName = /^[A-Z]/;
-
-function getRollupInputConfig(target) {
-  return {
-    external: [target],
-    plugins: [
-      babel({
-        presets: [
-          ['es2015', { modules: false }],
-          target
-        ],
-        plugins: [
-          'transform-object-rest-spread',
-          'external-helpers'
-        ]
-      })
-    ]
-  };
-}
 
 function normalizeName(name) {
   return name.split(/[ -]/g).map(part => {
@@ -146,7 +127,6 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
   console.log('Collecting components...');
   const components = collectComponents(svgFilesPath);
   console.log('Generating components...');
-  const pathsToUnlink = [];
   for (const [index, component] of components.entries()) {
     if (!component.aliasFor) {
       console.log(`Generating ${component.name}... (${index + 1}/${components.length})`);
@@ -155,25 +135,18 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
     }
 
     const fileContent = jsCb(component);
-    const inputPath = path.resolve(buildPath, component.fileName);
     const outputPath = path.resolve(publishPath, component.fileName);
 
-    fs.writeFileSync(inputPath, fileContent);
+    const output = await swc.transform(fileContent, {
+      jsc: {
+        parser: {
+          jsx: true
+        },
+        target: 'es2020',
+      },
+    })
 
-    const bundle = await rollup.rollup({
-      input: inputPath,
-      ...getRollupInputConfig(target)
-    });
-
-    await bundle.write({
-      file: outputPath,
-      format: 'cjs'
-    });
-
-    // remember paths to unlink later
-    if (!pathsToUnlink.includes(inputPath)) {
-      pathsToUnlink.push(inputPath);
-    }
+    fs.writeFileSync(outputPath, output.code)
 
     const definitionContent = tsCb(component);
     fs.writeFileSync(path.join(publishPath, component.defFileName), definitionContent);
@@ -183,11 +156,6 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
   // create the global typings.d.ts
   const typingsContent = tsAllCb();
   fs.writeFileSync(path.resolve(distPath, 'typings.d.ts'), typingsContent);
-
-  // clean up
-  for (const pathToUnlink of pathsToUnlink) {
-    fs.unlinkSync(pathToUnlink);
-  }
 }
 
 module.exports = generate;
