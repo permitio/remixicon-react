@@ -1,5 +1,4 @@
 const fs = require('fs/promises');
-const { sync: mkdirp } = require('mkdirp');
 const path = require('path');
 const swc = require("@swc/core");
 
@@ -127,11 +126,11 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
   const basePath = path.resolve(__dirname, '..');
   const svgFilesPath = path.resolve(basePath, 'node_modules/remixicon/icons');
   const buildPath = path.resolve(basePath, 'build');
-  mkdirp(buildPath);
+  await fs.mkdir(buildPath, { recursive: true });
   const publishPath = path.resolve(basePath, 'publish-' + target);
-  mkdirp(publishPath);
+  await fs.mkdir(publishPath, { recursive: true });
   const distPath = path.resolve(publishPath, 'dist');
-  mkdirp(distPath);
+  await fs.mkdir(distPath, { recursive: true });
 
   console.log('Collecting components...');
   const components = await collectComponents(svgFilesPath);
