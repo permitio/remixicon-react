@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs/promises');
 const { sync: mkdirp } = require('mkdirp');
 const path = require('path');
 const swc = require("@swc/core");
@@ -78,17 +78,17 @@ function extractPath(content, name) {
   return allPaths[0].d
 }
 
-function collectComponents(svgFilesPath) {
-  const svgFiles = fs.readdirSync(svgFilesPath);
+async function collectComponents(svgFilesPath) {
+  const svgFiles = await fs.readdir(svgFilesPath);
 
   const icons = [];
   for (const svgFile of svgFiles) {
     const svgFilePath = path.join(svgFilesPath, svgFile);
 
     // Handle sub-directories.
-    const stats = fs.statSync(svgFilePath);
+    const stats = await fs.stat(svgFilePath);
     if (stats.isDirectory()) {
-      icons.push(...collectComponents(svgFilePath));
+      icons.push(...await collectComponents(svgFilePath));
       continue;
     }
 
@@ -100,7 +100,7 @@ function collectComponents(svgFilesPath) {
       continue;
     }
 
-    const content = fs.readFileSync(svgFilePath);
+    const content = await fs.readFile(svgFilePath);
     let svgPath
     try {
       svgPath = extractPath(content, svgFilePath);
@@ -134,7 +134,7 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
   mkdirp(distPath);
 
   console.log('Collecting components...');
-  const components = collectComponents(svgFilesPath);
+  const components = await collectComponents(svgFilesPath);
   console.log('Generating components...');
   const componentNames = [];
   for (const [index, component] of components.entries()) {
@@ -156,15 +156,15 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
       },
     })
 
-    fs.writeFileSync(outputPath, output.code)
+    await fs.writeFile(outputPath, output.code)
 
     const definitionContent = tsCb(component);
-    fs.writeFileSync(path.join(publishPath, component.defFileName), definitionContent);
+    await fs.writeFile(path.join(publishPath, component.defFileName), definitionContent);
     componentNames.push(component.name)
   }
 
   console.log('Generating index.ts')
-  fs.writeFileSync(
+  await fs.writeFile(
     path.resolve(publishPath, 'index.ts'),
     componentNames.map((name) => `export { default as ${name} } from './${name}';`).join('\n')
   )
@@ -172,7 +172,7 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
   console.log('Generating typings...');
   // create the global typings.d.ts
   const typingsContent = tsAllCb(componentNames);
-  fs.writeFileSync(path.resolve(distPath, 'typings.d.ts'), typingsContent);
+  await fs.writeFile(path.resolve(distPath, 'typings.d.ts'), typingsContent);
 }
 
 module.exports = generate;
