@@ -1,17 +1,17 @@
 {
-  "name": "remixicon-react-builder",
+  "name": "dathost-remixicon-react-builder",
   "private": true,
   "version": "2.0.0",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/bayesimpact/remixicon-react.git"
+    "url": "git+ssh://git@github.com/dathost/remixicon-react.git"
   },
-  "author": "Levin Rickert <me@levrik.io>",
+  "author": "Svante Boberg <svante@dathost.net>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bayesimpact/remixicon-react/issues"
+    "url": "https://github.com/dathost/remixicon-react/issues"
   },
-  "homepage": "https://github.com/bayesimpact/remixicon-react",
+  "homepage": "https://github.com/dathost/remixicon-react",
   "scripts": {
     "clean-react": "rm -rf publish-react/*.js publish-react/*.d.ts publish-react/**/*.js publish-react/**/*.d.ts",
     "clean": "npm clean-react",
