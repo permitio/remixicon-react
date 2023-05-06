@@ -1,6 +1,6 @@
 import React from 'react'
 import SvgAccountBoxFill from './publish-react/SvgAccountBoxFill';
-import { SvgAccountBoxLine } from './publish-react'
+import SvgAccountBoxLine from './publish-react/SvgAccountBoxLine'
 
 // this will throw a type error
 const noRender = () => (

@@ -135,7 +135,6 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
   console.log('Collecting components...');
   const components = await collectComponents(svgFilesPath);
   console.log('Generating components...');
-  const componentNames = [];
   for (const [index, component] of components.entries()) {
     if (!component.aliasFor) {
       console.log(`Generating ${component.name}... (${index + 1}/${components.length})`);
@@ -159,18 +158,11 @@ async function generate(target, jsCb, tsCb, tsAllCb) {
 
     const definitionContent = tsCb(component);
     await fs.writeFile(path.join(publishPath, component.defFileName), definitionContent);
-    componentNames.push(component.name)
   }
-
-  console.log('Generating index.ts')
-  await fs.writeFile(
-    path.resolve(publishPath, 'index.ts'),
-    componentNames.map((name) => `export { default as ${name} } from './${name}';`).join('\n')
-  )
 
   console.log('Generating typings...');
   // create the global typings.d.ts
-  const typingsContent = tsAllCb(componentNames);
+  const typingsContent = tsAllCb();
   await fs.writeFile(path.resolve(distPath, 'typings.d.ts'), typingsContent);
 }
 
