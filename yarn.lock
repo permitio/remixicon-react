@@ -123,10 +123,10 @@ react@^18.2.0:
   dependencies:
     loose-envify "^1.1.0"
 
-remixicon@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/remixicon/-/remixicon-3.2.0.tgz#7c3f4c0a073bc4d1f9e8e9941f37a2961de5b561"
-  integrity sha512-ADh4EQE4UGtm9GHqD+TIfVp1b0zeWso6efaMAnejdB6/7Z1W02Ka5K8khQaz+LNgIqC6dSZxCvXMWNalYWHiNQ==
+remixicon@3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/remixicon/-/remixicon-3.5.0.tgz#ad3ea8e6cd80d6bc7a9a261fafc229f04a32ce5f"
+  integrity sha512-wNzWGKf4frb3tEmgvP5shry0n1OdTjjEk9RHLuRuAhfA50bvEdpKH1XWNUYrHUSjAQQkkdyIm+lf4mOuysIKTQ==
 
 semver@^7.3.5:
   version "7.5.1"
